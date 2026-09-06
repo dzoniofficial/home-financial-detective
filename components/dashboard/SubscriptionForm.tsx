@@ -65,11 +65,11 @@ export default function SubscriptionForm({ userId, existing, onSaved, onCancel }
       amount: Number(form.amount),
       currency: form.currency,
       billing_cycle: form.billing_cycle,
-      start_date: form.start_date || null,
+      start_date: form.start_date || undefined,
       renewal_date: form.renewal_date,
       category: form.category,
       status: form.status,
-      notes: form.notes || null,
+      notes: form.notes || undefined,
     };
 
     const result = subscriptionSchema.safeParse(candidate);
