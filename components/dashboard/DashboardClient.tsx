@@ -2,6 +2,8 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { createClient } from '@/lib/supabase/client';
 import type { Subscription } from '@/types/database';
 import { isRenewingSoon, isUrgent, toMonthlyAmount, toYearlyAmount } from '@/lib/date-utils';
 import BurnRateSummary from './BurnRateSummary';
@@ -19,6 +21,10 @@ type FormMode = { open: false } | { open: true; editing?: Subscription };
 export default function DashboardClient({ initialSubscriptions, userId }: Props) {
   const [subscriptions, setSubscriptions] = useState<Subscription[]>(initialSubscriptions);
   const [formMode, setFormMode] = useState<FormMode>({ open: false });
+  const [signingOut, setSigningOut] = useState(false);
+
+  const router = useRouter();
+  const supabase = createClient();
 
   const activeSubs = useMemo(
     () => subscriptions.filter((s) => s.status === 'active'),
@@ -53,8 +59,25 @@ export default function DashboardClient({ initialSubscriptions, userId }: Props)
     setFormMode({ open: false });
   }
 
+  async function handleSignOut() {
+    setSigningOut(true);
+    await supabase.auth.signOut();
+    router.push('/login');
+    router.refresh();
+  }
+
   return (
     <div className="mt-6 space-y-6">
+      <div className="flex justify-end">
+        <button
+          onClick={handleSignOut}
+          disabled={signingOut}
+          className="rounded-md border border-slate-300 px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 disabled:opacity-50"
+        >
+          {signingOut ? 'Signing out…' : 'Sign out'}
+        </button>
+      </div>
+
       {urgentRenewal && (
         <RenewalAlertBanner
           providerName={urgentRenewal.name}
