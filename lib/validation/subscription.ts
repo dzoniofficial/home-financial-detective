@@ -26,6 +26,7 @@ export const subscriptionSchema = z
       .string()
       .optional()
       .nullable()
+      .transform((val) => val ?? null)
       .refine((val) => !val || !isNaN(Date.parse(val)), {
         message: 'Start date is not valid.',
       }),
@@ -43,7 +44,13 @@ export const subscriptionSchema = z
 
     status: z.enum(['active', 'cancelled', 'paused']).default('active'),
 
-    notes: z.string().trim().max(1000, 'Note is too long.').optional().nullable(),
+    notes: z
+      .string()
+      .trim()
+      .max(1000, 'Note is too long.')
+      .optional()
+      .nullable()
+      .transform((val) => val ?? null),
   })
   .refine(
     (data) =>
