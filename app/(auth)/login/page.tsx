@@ -29,11 +29,11 @@ export default function LoginPage() {
 
     const emailResult = emailSchema.safeParse(email);
     const passwordResult = passwordSchema.safeParse(password);
-    const nextErrors: Record<string, string> = {};
-    if (!emailResult.success) nextErrors.email = emailResult.error.issues[0].message;
-    if (!passwordResult.success) nextErrors.password = passwordResult.error.issues[0].message;
 
-    if (Object.keys(nextErrors).length > 0) {
+    if (!emailResult.success || !passwordResult.success) {
+      const nextErrors: Record<string, string> = {};
+      if (!emailResult.success) nextErrors.email = emailResult.error.issues[0].message;
+      if (!passwordResult.success) nextErrors.password = passwordResult.error.issues[0].message;
       setErrors(nextErrors);
       return;
     }
